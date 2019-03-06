@@ -16,7 +16,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
   
   targets {
     key    = "InstanceIds"
-    values = "${element(var.mi_list, count.index)}"
+    values = "${element(var.mi_list.*, count.index)}"
   }
 }
 
