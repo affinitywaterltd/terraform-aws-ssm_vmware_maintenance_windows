@@ -75,5 +75,5 @@ variable "powershell_package_file" {
 
 variable "mi_list" {
   description = "List of Managed Instance Ids included in window"
-  default     = []
+  default     = ["mt-test","mt-test2"]
 }
