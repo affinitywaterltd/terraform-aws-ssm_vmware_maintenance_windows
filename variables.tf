@@ -72,3 +72,8 @@ variable "powershell_package_file" {
   description = "File location to install powershell module"
   default     = "null"
 }
+
+variable "mi_list" {
+  description = "List of Managed Instance Ids included in window"
+  default     = []
+}

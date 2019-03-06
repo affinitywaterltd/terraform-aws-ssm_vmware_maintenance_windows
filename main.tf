@@ -79,7 +79,7 @@ resource "aws_ssm_maintenance_window_task" "default_task2" {
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
+    values = "${var.mi_list}"
   }
 
   lifecycle {
