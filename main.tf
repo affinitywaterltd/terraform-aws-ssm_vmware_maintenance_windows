@@ -16,13 +16,13 @@ resource "aws_ssm_maintenance_window_target" "default" {
   
   targets {
     key    = "InstanceIds"
-    values = ["${var.mi_list}"]
+    values = ["${element(var.mi_list, count.index)}"]
   }
 }
 
 output "testoutput"{
     description = "test"
-    value       = "${var.mi_list}"
+    value       = "${element(var.mi_list, count.index)}"
 }
 
 resource "aws_ssm_maintenance_window_task" "default_task1" {
