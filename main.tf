@@ -15,8 +15,8 @@ resource "aws_ssm_maintenance_window_target" "default" {
   resource_type = "INSTANCE"
   
   targets {
-    key    = "tag:ssmMaintenanceWindow"
-    values = ["${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"]
+    key    = "InstanceIds"
+    values = "${element(var.mi_list, count.index)}"
   }
 }
 
@@ -79,7 +79,7 @@ resource "aws_ssm_maintenance_window_task" "default_task2" {
 
   targets {
     key    = "WindowTargetIds"
-    values = "${var.mi_list}"
+    values = ["${element(aws_ssm_maintenance_window.default.*.id, count.index)}"]
   }
 
   lifecycle {
