@@ -20,10 +20,6 @@ resource "aws_ssm_maintenance_window_target" "default" {
   }
 }
 
-output "testoutput"{
-    description = "test"
-    value       = "${element(var.mi_list, count.index)}"
-}
 
 resource "aws_ssm_maintenance_window_task" "default_task1" {
   count            = "${var.weeks}"
