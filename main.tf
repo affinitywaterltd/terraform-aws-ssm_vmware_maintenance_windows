@@ -16,10 +16,14 @@ resource "aws_ssm_maintenance_window_target" "default" {
   
   targets {
     key    = "InstanceIds"
-    values = "${element(var.mi_list["week1"])}"
+    values = "${var.mi_list}"
   }
 }
 
+output "testoutput"{
+    description = "test"
+    value       = "${var.mi_list}"
+}
 
 resource "aws_ssm_maintenance_window_task" "default_task1" {
   count            = "${var.weeks}"
