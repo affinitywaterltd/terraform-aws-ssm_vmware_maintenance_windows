@@ -14,7 +14,6 @@ variable "region" {
   default     = "eu-west-1"
 }
 
-
 variable "role" {
   description = "Role used by SSM"
   default     = "null"
@@ -24,7 +23,6 @@ variable "s3_bucket" {
   description = "S3 bucket for loggin"
   default     = "aw-ssm-logs"
 }
-
 
 variable "mw_duration" {
   description = "Maintenance Window Duration"
@@ -55,14 +53,12 @@ variable "weeks" {
   description = "Number of weeks to schedule"
   default     = "1"
 }
-variable "week" {
-  description = "Maintenance Window Week (1-4)"
-  default     = "unnamed"
-}
+
 variable "day" {
   description = "Maintenance Window Day (mon-sun)"
   default     = "unnamed"
 }
+
 variable "hour" {
   description = "Maintenance Window Hour (00-23)"
   default     = "unnamed"
@@ -71,6 +67,11 @@ variable "hour" {
 variable "powershell_package_file" {
   description = "File location to install powershell module"
   default     = "null"
+}
+
+variable "powershell_package_patameters" {
+  description = "Parameters to install powershell module"
+  default     = "/quite /norestart"
 }
 
 variable "mi_list" {
