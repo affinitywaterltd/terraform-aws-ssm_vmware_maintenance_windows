@@ -50,11 +50,11 @@ resource "aws_ssm_maintenance_window_task" "default_task1" {
   }
   task_parameters {
     name   = "source"
-    values = ["${var.powershell_package_file}"]
+    values = "${var.powershell_package_file}"
   }
   task_parameters {
     name   = "parameters"
-    values = ["${var.powershell_package_patameters}"]
+    values = "${var.powershell_package_patameters}"
   }
 
   lifecycle {
