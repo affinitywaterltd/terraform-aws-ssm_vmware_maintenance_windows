@@ -56,10 +56,11 @@ resource "aws_ssm_maintenance_window_task" "default_task1" {
     name   = "parameters"
     values = ["${var.powershell_package_patameters}"]
   }
-
+/*
   lifecycle {
     ignore_changes = ["task_parameters"]
   }
+*/
 }
 
 
