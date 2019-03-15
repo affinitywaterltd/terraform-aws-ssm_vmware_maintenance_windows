@@ -20,7 +20,7 @@ resource "aws_ssm_maintenance_window_target" "pre" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_enable" {
+resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
   name             = "AWS-RunPowerShellScript"
@@ -48,7 +48,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
     values = ["Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
   }
 }
-resource "aws_ssm_maintenance_window_task" "default_task_dotnet" {
+resource "aws_ssm_maintenance_window_task" "default_pre_task_dotnet" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
   name             = "AWS-RunPowerShellScript"
@@ -78,7 +78,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_dotnet" {
 }
 
 
-resource "aws_ssm_maintenance_window_task" "default_task_powershell" {
+resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
   name             = "AWS-RunPowerShellScript"
