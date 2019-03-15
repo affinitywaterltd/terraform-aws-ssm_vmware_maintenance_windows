@@ -67,10 +67,10 @@ resource "aws_ssm_maintenance_window_task" "default_task_dotnet" {
 resource "aws_ssm_maintenance_window_task" "default_task_powershell" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "AWS-InstallApplication"
+  name             = "AWS-RunPowerShellScript"
   description      = "Installs Powershell v3 Update Package"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-InstallApplication"
+  task_arn         = "AWS-RunPowerShellScript"
   priority         = 10
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
@@ -88,16 +88,8 @@ resource "aws_ssm_maintenance_window_task" "default_task_powershell" {
   }
 
   task_parameters {
-    name   = "action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "source"
-    values = ["${var.powershell_package_file}"]
-  }
-  task_parameters {
-    name   = "parameters"
-    values = ["${var.powershell_package_patameters}"]
+    name   = "commands"
+    values = ["wusa.exe  /i ${var.powershell_package_file} ${var.powershell_package_patameters}"]
   }
 /*
   lifecycle {

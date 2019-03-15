@@ -87,5 +87,5 @@ variable "powershell_package_file_before" {
 
 variable "powershell_package_patameters_before" {
   description = "Parameters to install powershell module"
-  default     = "/q /norestart"
+  default     = "/quiet /norestart"
 }
