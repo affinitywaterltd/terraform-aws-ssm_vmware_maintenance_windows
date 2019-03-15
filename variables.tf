@@ -71,10 +71,21 @@ variable "powershell_package_file" {
 
 variable "powershell_package_patameters" {
   description = "Parameters to install powershell module"
-  default     = "/quite /norestart"
+  default     = "/quiet /norestart"
 }
 
 variable "mi_list" {
   description = "List of Managed Instance Ids included in window"
   default     = ["mt-test","mt-test2"]
+}
+
+
+variable "powershell_package_file_before" {
+  description = "File location to install powershell module"
+  default     = "null"
+}
+
+variable "powershell_package_patameters_before" {
+  description = "Parameters to install powershell module"
+  default     = "/q /norestart"
 }
