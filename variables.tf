@@ -71,7 +71,7 @@ variable "powershell_package_file" {
 
 variable "powershell_package_patameters" {
   description = "Parameters to install powershell module"
-  default     = "/quiet /norestart"
+  default     = "/quiet"
 }
 
 variable "mi_list" {
@@ -87,5 +87,5 @@ variable "powershell_package_file_before" {
 
 variable "powershell_package_patameters_before" {
   description = "Parameters to install powershell module"
-  default     = "/quiet /norestart"
+  default     = "/q /norestart"
 }
