@@ -1,7 +1,122 @@
+
+resource "aws_ssm_maintenance_window" "pre" {
+  count    = "${var.weeks}"
+  name     = "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"
+  schedule = "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
+  duration = "${var.mw_duration}"
+  cutoff   = "${var.mw_cutoff}"
+  schedule_timezone = "Europe/London"
+}
+
+resource "aws_ssm_maintenance_window_target" "pre" {
+  count         = "${var.weeks}"
+  window_id     = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
+  
+  resource_type = "INSTANCE"
+  
+  targets {
+    key    = "InstanceIds"
+    values = ["${element(var.mi_list, count.index)}"]
+  }
+}
+
+
+resource "aws_ssm_maintenance_window_task" "default_task_dotnet" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
+  name             = "AWS-InstallApplication"
+  description      = "Installs dotNET4 pre-req for Powershell v3"
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWS-InstallApplication"
+  priority         = 9
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  logging_info {
+      s3_bucket_name = "${var.s3_bucket}"
+      s3_region = "${var.region}"
+      s3_bucket_prefix = "${var.account}-${var.environment}"
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "action"
+    values = ["Install"]
+  }
+  task_parameters {
+    name   = "source"
+    values = ["${var.powershell_package_file_before}"]
+  }
+  task_parameters {
+    name   = "parameters"
+    values = ["${var.powershell_package_patameters_before}"]
+  }
+/*
+  lifecycle {
+    ignore_changes = ["task_parameters"]
+  }
+*/
+}
+
+
+resource "aws_ssm_maintenance_window_task" "default_task_powershell" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
+  name             = "AWS-InstallApplication"
+  description      = "Installs Powershell v3 Update Package"
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWS-InstallApplication"
+  priority         = 10
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  logging_info {
+      s3_bucket_name = "${var.s3_bucket}"
+      s3_region = "${var.region}"
+      s3_bucket_prefix = "${var.account}-${var.environment}"
+  }
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "action"
+    values = ["Install"]
+  }
+  task_parameters {
+    name   = "source"
+    values = ["${var.powershell_package_file}"]
+  }
+  task_parameters {
+    name   = "parameters"
+    values = ["${var.powershell_package_patameters}"]
+  }
+/*
+  lifecycle {
+    ignore_changes = ["task_parameters"]
+  }
+*/
+}
+
+
+#
+#
+# Update Window - 30mins past
+#
+#
+
 resource "aws_ssm_maintenance_window" "default" {
   count    = "${var.weeks}"
   name     = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00"
-  schedule = "cron(00 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
+  schedule = "cron(30 ${var.hour} ? 1/3 ${var.day}#${count.index+1} *)"
   duration = "${var.mw_duration}"
   cutoff   = "${var.mw_cutoff}"
   schedule_timezone = "Europe/London"
@@ -44,90 +159,6 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_dotnet" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWS-InstallApplication"
-  description      = "Installs dotNET4 pre-req for Powershell v3"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-InstallApplication"
-  priority         = 9
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "source"
-    values = ["${var.powershell_package_file_before}"]
-  }
-  task_parameters {
-    name   = "parameters"
-    values = ["${var.powershell_package_patameters_before}"]
-  }
-/*
-  lifecycle {
-    ignore_changes = ["task_parameters"]
-  }
-*/
-}
-
-
-resource "aws_ssm_maintenance_window_task" "default_task_powershell" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWS-InstallApplication"
-  description      = "Installs Powershell v3 Update Package"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-InstallApplication"
-  priority         = 10
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "action"
-    values = ["Install"]
-  }
-  task_parameters {
-    name   = "source"
-    values = ["${var.powershell_package_file}"]
-  }
-  task_parameters {
-    name   = "parameters"
-    values = ["${var.powershell_package_patameters}"]
-  }
-/*
-  lifecycle {
-    ignore_changes = ["task_parameters"]
-  }
-*/
-}
 
 
 resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
