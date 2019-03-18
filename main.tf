@@ -48,35 +48,6 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
     values = ["Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
   }
 }
-resource "aws_ssm_maintenance_window_task" "default_pre_task_dotnet" {
-  count            = "${var.weeks}"
-  window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "AWS-RunPowerShellScript"
-  description      = "Installs dotNET4 pre-req for Powershell v3"
-  task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-RunPowerShellScript"
-  priority         = 20
-  service_role_arn = "${var.role}"
-  max_concurrency  = "${var.mw_concurrency}"
-  max_errors       = "${var.mw_error_rate}"
-
-  logging_info {
-      s3_bucket_name = "${var.s3_bucket}"
-      s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
-  }
-
-  targets {
-    key    = "WindowTargetIds"
-    values = ["${element(aws_ssm_maintenance_window_target.pre.*.id, count.index)}"]
-  }
-
-  task_parameters {
-    name   = "commands"
-    values = ["${var.powershell_package_patameters_before} ${var.powershell_package_file_before}"]
-  }
-}
-
 
 resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   count            = "${var.weeks}"
