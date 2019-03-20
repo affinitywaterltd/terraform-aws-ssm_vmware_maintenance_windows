@@ -232,7 +232,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
 resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWS-InstallWindowsUpdates"
+  name             = "AWL-InstallWindowsUpdates"
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallWindowsUpdates"
