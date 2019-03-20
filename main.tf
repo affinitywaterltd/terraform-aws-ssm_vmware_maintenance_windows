@@ -235,7 +235,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   name             = "AWL-InstallWindowsUpdates"
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWS-InstallWindowsUpdates"
+  task_arn         = "AWL-InstallWindowsUpdates"
   priority         = 40
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
