@@ -23,7 +23,7 @@ resource "aws_ssm_maintenance_window_target" "pre" {
 resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "AWS-RunPowerShellScript"
+  name             = "enable_wsus"
   description      = "Enable Windows Update Service"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
@@ -35,7 +35,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
@@ -52,7 +52,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
 resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.pre.*.id, count.index)}"
-  name             = "AWS-RunPowerShellScript"
+  name             = "install_powershell_v3"
   description      = "Installs Powershell v3 Update Package"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
@@ -64,7 +64,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
@@ -111,7 +111,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
 resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWS-InstallApplication"
+  name             = "install_vmware_powercli"
   description      = "Installs PowerCLI"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-InstallApplication"
@@ -123,7 +123,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
@@ -143,13 +143,13 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
 
 }
 
-resource "aws_ssm_maintenance_window_task" "default_task_enable" {
+resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWL-EnableUpdateServices"
-  description      = "Sets Windows Update Service (wuauserv) to manual and starts service."
+  name             = "reset_wsus"
+  description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWL-EnableUpdateServices"
+  task_arn         = "AWS-RunPowerShellScript"
   priority         = 10
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
@@ -158,21 +158,27 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
   }
+
+  task_parameters {
+    name   = "commands"
+    values = ["Stop-Service -Name 'wuauserv'","Remove-Item -Path 'C:\\Windows\\SoftwareDistribution' -Recurse","Set-Service -Name 'wuauserv' -StartupType Manual","Start-Service -Name 'wuauserv'"]
+  }
 }
+
 
 
 
 resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWL-TakeVMwareSnapshot"
+  name             = "take_vmware_snapshot"
   description      = "Take Snapshot of vmware server"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-TakeVMwareSnapshot"
@@ -184,7 +190,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
@@ -199,7 +205,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
 resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWS-UpdateSSMAgent"
+  name             = "update_ssm_agent"
   description      = "Update SSM Agent"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-UpdateSSMAgent"
@@ -211,7 +217,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
@@ -232,7 +238,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_ssmagent" {
 resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWL-InstallWindowsUpdates"
+  name             = "install_windows_updates"
   description      = "Install Windows Updates"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWL-InstallWindowsUpdates"
@@ -244,7 +250,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
@@ -279,14 +285,14 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
 }
 
 
-resource "aws_ssm_maintenance_window_task" "default_task_disable" {
+resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  name             = "AWL-DisableUpdateServices"
-  description      = "Sets Windows Update Service (wuauserv) to disable and stops service."
+  name             = "disable_wsus"
+  description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
-  task_arn         = "AWL-DisableUpdateServices"
-  priority         = 60
+  task_arn         = "AWS-RunPowerShellScript"
+  priority         = 10
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -294,11 +300,16 @@ resource "aws_ssm_maintenance_window_task" "default_task_disable" {
   logging_info {
       s3_bucket_name = "${var.s3_bucket}"
       s3_region = "${var.region}"
-      s3_bucket_prefix = "${var.account}-${var.environment}"
+      s3_bucket_prefix = "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}"
   }
 
   targets {
     key    = "WindowTargetIds"
     values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+
+  task_parameters {
+    name   = "commands"
+    values = ["Stop-Service -Name 'wuauserv'","Set-Service -Name 'wuauserv' -StartupType Disabled"]
   }
 }
