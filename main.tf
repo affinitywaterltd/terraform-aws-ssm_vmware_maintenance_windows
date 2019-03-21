@@ -143,7 +143,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
 
 }
 
-resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
+resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "reset_wsus"
@@ -285,7 +285,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
 }
 
 
-resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
+resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
   name             = "disable_wsus"
