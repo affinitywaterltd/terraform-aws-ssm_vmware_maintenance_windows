@@ -56,7 +56,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   description      = "Installs Powershell v3 Update Package"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
-  priority         = 30
+  priority         = 20
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
@@ -292,7 +292,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   description      = "Reset Windows Update Service"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-RunPowerShellScript"
-  priority         = 10
+  priority         = 50
   service_role_arn = "${var.role}"
   max_concurrency  = "${var.mw_concurrency}"
   max_errors       = "${var.mw_error_rate}"
