@@ -76,7 +76,7 @@ variable "powershell_package_patameters" {
 
 variable "mi_list" {
   description = "List of Managed Instance Ids included in window"
-  default     = ["mt-test","mt-test2"]
+  default     = {"week1" = ["mt-test","mt-test2"]}
 }
 
 
