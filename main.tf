@@ -16,7 +16,7 @@ resource "aws_ssm_maintenance_window_target" "pre" {
   
   targets {
     key    = "InstanceIds"
-    values = ["${element(var.mi_list, count.index)}"]
+    values = ["${var.mi_list["week${count.index+1}"]}"]
   }
 }
 
@@ -103,7 +103,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
   
   targets {
     key    = "InstanceIds"
-    values = ["${var.mi_list["week${count.index}"]}"]
+    values = ["${var.mi_list["week${count.index+1}"]}"]
   }
 }
 
