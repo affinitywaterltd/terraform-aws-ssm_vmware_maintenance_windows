@@ -16,7 +16,7 @@ resource "aws_ssm_maintenance_window_target" "pre" {
   
   targets {
     key    = "InstanceIds"
-    values = ["${var.weeks > 1 ? "${var.mi_list["week${count.index+1}"]}" : "${var.mi_list["week${var.week}"]}"}"]
+    values = "${var.weeks > 1 ? "${var.mi_list["week${count.index+1}"]}" : "${var.mi_list["week${var.week}"]}"}"
   }
 }
 
@@ -103,7 +103,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
   
   targets {
     key    = "InstanceIds"
-    values = ["${var.weeks > 1 ? "${var.mi_list["week${count.index+1}"]}" : "${var.mi_list["week${var.week}"]}"}"]
+    values = "${var.weeks > 1 ? "${var.mi_list["week${count.index+1}"]}" : "${var.mi_list["week${var.week}"]}"}"
   }
 }
 
