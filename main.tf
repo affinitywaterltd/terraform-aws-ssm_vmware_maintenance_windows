@@ -49,7 +49,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_enable" {
   }
   task_parameters {
     name   = "executionTimeout"
-    values = "300"
+    values = ["300"]
   }
 }
 
@@ -82,7 +82,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
   }
  task_parameters {
     name   = "executionTimeout"
-    values = "900"
+    values = ["900"]
   }
 }
 
@@ -180,7 +180,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   }
   task_parameters {
     name   = "executionTimeout"
-    values = "300"
+    values = ["300"]
   }
 }
 
@@ -326,6 +326,6 @@ resource "aws_ssm_maintenance_window_task" "default_task_disble" {
   }
   task_parameters {
     name   = "executionTimeout"
-    values = "300"
+    values = ["300"]
   }
 }
