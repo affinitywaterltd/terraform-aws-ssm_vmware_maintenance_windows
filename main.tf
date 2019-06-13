@@ -106,7 +106,8 @@ resource "aws_ssm_maintenance_window" "default" {
 resource "aws_ssm_maintenance_window_target" "default" {
   count         = "${var.weeks}"
   window_id     = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
-  
+  name          = "default"
+  description   = "default"
   resource_type = "INSTANCE"
   
   targets {
