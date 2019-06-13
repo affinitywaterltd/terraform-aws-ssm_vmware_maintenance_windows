@@ -1,4 +1,4 @@
-
+/*
 resource "aws_ssm_maintenance_window" "pre" {
   count    = "${var.weeks}"
   name = "${var.weeks > 1 ? "pre_${var.type}_week-${count.index+1}_${var.day}_${var.hour}00" : "pre_${var.type}_week-${var.week}_${var.day}_${var.hour}00"}"
@@ -85,7 +85,7 @@ resource "aws_ssm_maintenance_window_task" "default_pre_task_powershell" {
     values = ["900"]
   }
 }
-
+*/
 
 #
 #
