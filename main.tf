@@ -27,7 +27,7 @@ resource "aws_ssm_maintenance_window_target" "default" {
   }
 }
 
-
+/*
 resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
@@ -62,6 +62,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_vss_install" {
   } 
 
 }
+*/
 
 resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   count            = "${var.weeks}"
