@@ -166,7 +166,7 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
   }
   task_parameters {
     name   = "PublishedDaysOld"
-    values = ["7"]
+    values = ["0"]
   }
 
   lifecycle {
