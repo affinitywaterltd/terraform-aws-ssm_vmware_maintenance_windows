@@ -169,9 +169,9 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
     values = ["0"]
   }
 
-  lifecycle {
+  /*lifecycle {
     ignore_changes = ["task_parameters"]
-  }
+  }*/
 }
 
 
