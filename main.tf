@@ -164,11 +164,11 @@ resource "aws_ssm_maintenance_window_task" "default_task_updates" {
     name   = "SeverityLevels"
     values = ["Critical,Important,Low,Moderate,Unspecified"]
   }
-  /*
+
   task_parameters {
     name   = "PublishedDaysOld"
-    values = ["0"]
-  }*/
+    values = ["7"]
+  }
 
   /*lifecycle {
     ignore_changes = ["task_parameters"]
