@@ -1,4 +1,3 @@
-
 variable "account" {
   description = "Code for account, defined in TFE (e.g apps)"
   default     = "wholesale"
@@ -68,3 +67,4 @@ variable "hour" {
   description = "Maintenance Window Hour (00-23)"
   default     = "unnamed"
 }
+
