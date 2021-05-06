@@ -63,6 +63,42 @@ resource "aws_ssm_maintenance_window_task" "default_task_enable" {
   }
 }
 
+resource "aws_ssm_maintenance_window_task" "default_task_take_checkpoint" {
+  count            = "${var.weeks}"
+  window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
+  name             = "take_checkpoint"
+  description      = "Takes Checkpoint of VM's"
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWS-RunPowerShellScript"
+  priority         = 15
+  service_role_arn = "${var.role}"
+  max_concurrency  = "${var.mw_concurrency}"
+  max_errors       = "${var.mw_error_rate}"
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${element(aws_ssm_maintenance_window_target.default.*.id, count.index)}"]
+  }
+
+  task_invocation_parameters {
+    run_command_parameters {
+      output_s3_bucket = "${var.s3_bucket}"
+      output_s3_key_prefix = "${var.weeks > 1 ? "${var.type}_week-${count.index+1}_${var.day}_${var.hour}00/${var.account}-${var.environment}" : "${var.type}_week-${var.week}_${var.day}_${var.hour}00/${var.account}-${var.environment}" }"
+      service_role_arn = "${var.role}"
+      timeout_seconds  = 300
+
+      parameter {
+        name   = "commands"
+        values = ["$VMname = $env:COMPUTERNAME","$HypverVNode = Invoke-Command -ComputerName hubprdhyvclus.grpdom.vwuk.corp -ScriptBlock {((Get-Clustergroup -name $using:VMname).OwnerNode).Name }","Invoke-Command -computername $HypverVNode -ScriptBlock {Checkpoint-vm -name $using:VMname -snapshotname 'Patching-$($using:VMname)'}"]
+      }
+      parameter {
+        name   = "executionTimeout"
+        values = ["300"]
+      }
+    }
+  }
+}
+
 resource "aws_ssm_maintenance_window_task" "default_task_snapshot" {
   count            = "${var.weeks}"
   window_id        = "${element(aws_ssm_maintenance_window.default.*.id, count.index)}"
